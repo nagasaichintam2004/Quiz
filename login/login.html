@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>login page</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <link rel="stylesheet" href="style2.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+    <body>
+       <div class="container">
+            <h1 class="third"><u>REGISTER</u></h1>
+            <form class="new" method="get" onsubmit="saveNicknameAndLogin(event)">
+                <label for="name"><i class="fas fa-user"></i></label>
+                <input  name="name" type="text" id="name" placeholder="nick name" required><br>
+
+                <label for="emailid"><i class="fas fa-envelope"></i></label>
+                <input  name="email"  type="email" id="emailid" placeholder="EMail" required><br>
+
+                <button type="submit">SUBMIT</button>
+            </form>
+        </div>
+        <script>
+            function saveNicknameAndLogin(event) {
+    event.preventDefault();
+
+    const nickname = document.getElementById("name").value.trim();
+    if (!nickname) {
+        alert("Please enter your nickname");
+        return;
+    }
+
+    localStorage.setItem("nickname", nickname);
+    window.location.href = "../language/language.html";
+}
+
+        </script>
+    </body>
+    </html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style4.css">
+</head>
+<body>
+<div class="quiz-container">
+    <div id="timer">Time Left: 15</div>
+    <h2 id="question">Question text here</h2>
+    <button class="option" onclick="selectAnswer(0)">Option A</button>
+    <button class="option" onclick="selectAnswer(1)">Option B</button>
+    <button class="option" onclick="selectAnswer(2)">Option C</button>
+    <button class="option" onclick="selectAnswer(3)">Option D</button>
+    <p id="result"></p>
+</div>
+
+<script>
+const questions = [
+    {
+        question: "What is the size of an int data type in Java?",
+        options: ["A. 8 bits", "B. 16 bits", "C. 32 bits", "D. 64 bits"],
+        answer: 2
+    },
+    {
+        question: "Which of the following is not a Java keyword?",
+        options: ["A. static", "B. Boolean", "C. void", "D. private"],
+        answer: 1
+    },
+    {
+        question: "What is the default value of a boolean variable in Java?",
+        options: ["A. true", "B. false", "C. null", "D. 0"],
+        answer: 1
+    },
+    {
+        question: "Which method is the entry point for a Java program?",
+        options: ["A. start()", "B. main()", "C. run()", "D. init()"],
+        answer: 1
+    },
+    {
+    question: "Which of these is NOT a valid access modifier in Java?",
+    options: ["A. public", "B. protected", "C. private", "D. visible"],
+    answer: 3
+},
+    {
+        question: "Which of the following is used to handle exceptions in Java?",
+        options: ["A. try-catch", "B. if-else", "C. switch-case", "D. for loop"],
+        answer: 0
+    },
+    {
+    question: "Which keyword is used to create a new object in Java?",
+    options: ["A. create", "B. new", "C. make", "D. object"],
+    answer: 1
+},
+    {
+        question: "Which package contains the Random class?",
+        options: ["A. java.io", "B. java.util", "C. java.lang", "D. java.net"],
+        answer: 1
+    },
+    {
+        question: "Which keyword is used to prevent method overriding?",
+        options: ["A. static", "B. final", "C. private", "D. abstract"],
+        answer: 1
+    },
+    {
+        question: "What will be the output of: System.out.println(10 + 20 + \"30\");?",
+        options: ["A. 3030", "B. 102030", "C. 30 30", "D. Error"],
+        answer: 0
+    }
+];
+
+let current = 0;
+let score = 0;
+let timeLeft = 15;         // seconds per question
+let timerId = null;
+
+function loadQuestion() {
+    clearInterval(timerId);       // clear any previous timer
+    timeLeft = 15;
+    document.getElementById("timer").textContent = "Time Left: " + timeLeft;
+  
+    const q = questions[current];
+    document.getElementById("question").textContent = (current + 1) + ". " + q.question;
+    const buttons = document.querySelectorAll(".option");
+    buttons.forEach((btn, i) => {
+        btn.textContent = q.options[i];
+        btn.disabled = false;      // enable buttons on new question
+    });
+    document.getElementById("result").textContent = "";
+
+    // start timer countdown
+    timerId = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = "Time Left: " + timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerId);
+            document.getElementById("result").textContent = "⏰ Time's up!";
+            disableOptions();
+            setTimeout(nextQuestion, 1000);
+        }
+    }, 1000);
+}
+
+function disableOptions() {
+    const buttons = document.querySelectorAll(".option");
+    buttons.forEach(btn => btn.disabled = true);
+}
+
+function selectAnswer(index) {
+    clearInterval(timerId);    // stop timer on answer select
+    const correctAnswer = questions[current].answer;
+
+    if (index === correctAnswer) {
+        score++;
+        document.getElementById("result").textContent = "✅ Correct!";
+    } else {
+        document.getElementById("result").textContent = "❌ Wrong!";
+    }
+    disableOptions();
+
+    setTimeout(nextQuestion, 1000);
+}
+
+function nextQuestion() {
+    current++;
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    const nickname = localStorage.getItem("nickname") || "User";
+    const total = questions.length;
+    const percent = (score / total) * 100;
+    let message = "";
+
+    if (percent === 100) {
+        message = "🏆 Excellent! You got everything right!";
+    } else if (percent >= 70) {
+        message = "🎉 Great job! You're doing well!";
+    } else if (percent >= 40) {
+        message = "🙂 Not bad! Keep learning.";
+    } else {
+        message = "😢 Don't give up! Try again!";
+    }
+
+    document.querySelector(".quiz-container").innerHTML = `
+        <h2 class="quiz">Quiz Completed!</h2>
+        <p>Well done, <strong>${nickname}</strong>!</p>
+        <p>Your Score: <strong>${score}</strong> out of <strong>${total}</strong></p>
+        <p>${message}</p>
+        <a href="../language/language.html"><p class="back">Back to language page</p></a>
+    `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>

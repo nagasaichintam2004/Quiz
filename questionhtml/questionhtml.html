@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style6.css">
+</head>
+<body>
+<div class="quiz-container">
+    <div id="timer">Time Left: 15</div>
+    <h2 id="question">Question text here</h2>
+    <button class="option" onclick="selectAnswer(0)">Option A</button>
+    <button class="option" onclick="selectAnswer(1)">Option B</button>
+    <button class="option" onclick="selectAnswer(2)">Option C</button>
+    <button class="option" onclick="selectAnswer(3)">Option D</button>
+    <p id="result"></p>
+</div>
+
+<script>
+const questions = [
+    {
+        question: "What does HTML stand for?",
+        options: [
+            "A. Hyper Trainer Marking Language",
+            "B. Hyper Text Marketing Language",
+            "C. Hyper Text Markup Language",
+            "D. Hyper Text Mark Language"
+        ],
+        answer: 2
+    },
+    {
+        question: "Which HTML tag is used to create a hyperlink?",
+        options: [
+            "A. <link>",
+            "B. <a>",
+            "C. <href>",
+            "D. <hyper>"
+        ],
+        answer: 1
+    },
+    {
+        question: "Which tag is used to insert an image in HTML?",
+        options: [
+            "A. <image>",
+            "B. <img>",
+            "C. <pic>",
+            "D. <src>"
+        ],
+        answer: 1
+    },
+    {
+        question: "Which HTML tag is used to create a line break?",
+        options: [
+            "A. <break>",
+            "B. <br>",
+            "C. <lb>",
+            "D. <newline>"
+        ],
+        answer: 1
+    },
+    {
+        question: "What is the correct way to make text bold in HTML?",
+        options: [
+            "A. <strong>",
+            "B. <bold>",
+            "C. <bld>",
+            "D. <text-bold>"
+        ],
+        answer: 0
+    },
+    {
+        question: "Tag for checkbox?",
+        options: ["A. <input type='check'>", "B. <checkbox>", "C. <input type='checkbox'>", "D. <box>"],
+        answer: 2
+    },
+    {
+        question: "HTML tag for table?",
+        options: ["A. <tbl>", "B. <td>", "C. <table>", "D. <tab>"],
+        answer: 2
+    },
+    {
+        question: "Form tag?",
+        options: ["A. <form>", "B. <input>", "C. <submit>", "D. <action>"],
+        answer: 0
+    },
+    {
+        question: "To create dropdown?",
+        options: ["A. <input>", "B. <list>", "C. <select>", "D. <dropdown>"],
+        answer: 2
+    },
+    {
+        question: "Tag for comment?",
+        options: ["A. //", "B. <!-- -->", "C. ##", "D. ** **"],
+        answer: 1
+    }
+
+];
+
+
+let current = 0;
+let score = 0;
+let timeLeft = 15;         // seconds per question
+let timerId = null;
+
+function loadQuestion() {
+    clearInterval(timerId);       // clear any previous timer
+    timeLeft = 15;
+    document.getElementById("timer").textContent = "Time Left: " + timeLeft;
+  
+    const q = questions[current];
+    document.getElementById("question").textContent = (current + 1) + ". " + q.question;
+    const buttons = document.querySelectorAll(".option");
+    buttons.forEach((btn, i) => {
+        btn.textContent = q.options[i];
+        btn.disabled = false;      // enable buttons on new question
+    });
+    document.getElementById("result").textContent = "";
+
+    // start timer countdown
+    timerId = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = "Time Left: " + timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerId);
+            document.getElementById("result").textContent = "⏰ Time's up!";
+            disableOptions();
+            setTimeout(nextQuestion, 1000);
+        }
+    }, 1000);
+}
+
+function disableOptions() {
+    const buttons = document.querySelectorAll(".option");
+    buttons.forEach(btn => btn.disabled = true);
+}
+
+function selectAnswer(index) {
+    clearInterval(timerId);    // stop timer on answer select
+    const correctAnswer = questions[current].answer;
+
+    if (index === correctAnswer) {
+        score++;
+        document.getElementById("result").textContent = "✅ Correct!";
+    } else {
+        document.getElementById("result").textContent = "❌ Wrong!";
+    }
+    disableOptions();
+
+    setTimeout(nextQuestion, 1000);
+}
+
+function nextQuestion() {
+    current++;
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    const nickname = localStorage.getItem("nickname") || "User";
+    const total = questions.length;
+    const percent = (score / total) * 100;
+    let message = "";
+
+    if (percent === 100) {
+        message = "🏆 Excellent! You got everything right!";
+    } else if (percent >= 70) {
+        message = "🎉 Great job! You're doing well!";
+    } else if (percent >= 40) {
+        message = "🙂 Not bad! Keep learning.";
+    } else {
+        message = "😢 Don't give up! Try again!";
+    }
+
+    document.querySelector(".quiz-container").innerHTML = `
+        <h2 class="quiz">Quiz Completed!</h2>
+        <p>Well done, <strong>${nickname}</strong>!</p>
+        <p>Your Score: <strong>${score}</strong> out of <strong>${total}</strong></p>
+        <p>${message}</p>
+        <a href="../language/language.html"><p class="back">Back to language page</p></a>
+    `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+body{
+    background-image:url('welcome.jpg');
+     background-size:cover;
+     background-repeat:no-repeat;
+}
+button{
+    width:150px;
+    height:60px;
+    font-size:22px;
+    background-color:rgb(26, 128, 55);
+    border-radius:5px;
+    color:white;
+    margin-top:470px;
+    margin-left:600px;
+}

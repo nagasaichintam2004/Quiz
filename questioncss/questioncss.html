@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style7.css">
+</head>
+<body>
+<div class="quiz-container">
+    <div id="timer">Time Left: 15</div>
+    <h2 id="question">Question text here</h2>
+    <button class="option" onclick="selectAnswer(0)">Option A</button>
+    <button class="option" onclick="selectAnswer(1)">Option B</button>
+    <button class="option" onclick="selectAnswer(2)">Option C</button>
+    <button class="option" onclick="selectAnswer(3)">Option D</button>
+    <p id="result"></p>
+</div>
+
+<script>
+const questions = [
+     {
+    question: "Which symbol is used for ID selector?",
+    options: ["A. .", "B. #", "C. @", "D. $"],
+    answer: "B"
+  },
+  {
+    question: "Which tag is used to link CSS?",
+    options: ["A. <css>", "B. <link>", "C. <style>", "D. <script>"],
+    answer: "B"
+  },
+  {
+    question: "Which property changes text color?",
+    options: ["A. font", "B. bgcolor", "C. color", "D. text"],
+    answer: "C"
+  },
+  {
+    question: "How to make text bold in CSS?",
+    options: ["A. font-weight", "B. bold", "C. font", "D. weight"],
+    answer: "A"
+  },
+  {
+    question: "Which value makes border rounded?",
+    options: ["A. curve", "B. round", "C. border-radius", "D. circle"],
+    answer: "C"
+  },
+  {
+    question: "How to center text?",
+    options: ["A. align-text", "B. text-align", "C. center", "D. margin"],
+    answer: "B"
+  },
+  {
+    question: "Which property sets background color?",
+    options: ["A. bgcolor", "B. background", "C. background-color", "D. color"],
+    answer: "C"
+  },
+  {
+    question: "Which unit is relative?",
+    options: ["A. px", "B. cm", "C. pt", "D. em"],
+    answer: "D"
+  },
+  {
+    question: "How to select class in CSS?",
+    options: ["A. #name", "B. .name", "C. name", "D. $name"],
+    answer: "B"
+  },
+  {
+    question: "Which property sets space inside?",
+    options: ["A. margin", "B. padding", "C. gap", "D. border"],
+    answer: "B"
+  }
+];
+
+let current = 0;
+let score = 0;
+let timeLeft = 15;         // seconds per question
+let timerId = null;
+
+function loadQuestion() {
+    clearInterval(timerId);       // clear any previous timer
+    timeLeft = 15;
+    document.getElementById("timer").textContent = "Time Left: " + timeLeft;
+  
+    const q = questions[current];
+    document.getElementById("question").textContent = (current + 1) + ". " + q.question;
+    const buttons = document.querySelectorAll(".option");
+    buttons.forEach((btn, i) => {
+        btn.textContent = q.options[i];
+        btn.disabled = false;      // enable buttons on new question
+    });
+    document.getElementById("result").textContent = "";
+
+    // start timer countdown
+    timerId = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = "Time Left: " + timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerId);
+            document.getElementById("result").textContent = "⏰ Time's up!";
+            disableOptions();
+            setTimeout(nextQuestion, 1000);
+        }
+    }, 1000);
+}
+
+function disableOptions() {
+    const buttons = document.querySelectorAll(".option");
+    buttons.forEach(btn => btn.disabled = true);
+}
+
+function selectAnswer(index) {
+    clearInterval(timerId);    // stop timer on answer select
+    const correctAnswer = questions[current].answer;
+
+    if (index === correctAnswer) {
+        score++;
+        document.getElementById("result").textContent = "✅ Correct!";
+    } else {
+        document.getElementById("result").textContent = "❌ Wrong!";
+    }
+    disableOptions();
+
+    setTimeout(nextQuestion, 1000);
+}
+
+function nextQuestion() {
+    current++;
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    const nickname = localStorage.getItem("nickname") || "User";
+    const total = questions.length;
+    const percent = (score / total) * 100;
+    let message = "";
+
+    if (percent === 100) {
+        message = "🏆 Excellent! You got everything right!";
+    } else if (percent >= 70) {
+        message = "🎉 Great job! You're doing well!";
+    } else if (percent >= 40) {
+        message = "🙂 Not bad! Keep learning.";
+    } else {
+        message = "😢 Don't give up! Try again!";
+    }
+
+    document.querySelector(".quiz-container").innerHTML = `
+        <h2 class="quiz">Quiz Completed!</h2>
+        <p>Well done, <strong>${nickname}</strong>!</p>
+        <p>Your Score: <strong>${score}</strong> out of <strong>${total}</strong></p>
+        <p>${message}</p>
+       <a href="../language/language.html"><p class="back">Back to language page</p></a>
+    `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
